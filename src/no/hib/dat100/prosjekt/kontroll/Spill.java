@@ -320,14 +320,20 @@ public class Spill {
 	public Kort utforHandling(ISpiller spiller, Handling handling) {
 
 		Kort kort = null;
-		Handling leggned = new Handling(HandlingsType.LEGGNED, kort);
-		Handling trekk = new Handling(HandlingsType.TREKK, kort);
 		
-		if (spiller.nesteHandling(bunkeTil.seSiste()).equals(leggned)){
-			return spiller.nesteHandling(bunkeTil.seSiste()).getKort();
-		} else if (spiller.nesteHandling(bunkeTil.seSiste()).equals(trekk)) {
+		if (handling.getType().equals(HandlingsType.LEGGNED)) {
+			kort = handling.getKort();
+			bunkeTil.leggTil(kort);
+			spiller.getHand().fjern(kort);
+			spiller.setAntallTrekk(1);
+				return kort;
+		} else if (handling.getType().equals(HandlingsType.TREKK)) {	
+			kort = bunkeFra.trekk();
+			spiller.getHand().leggTil(kort);
+			spiller.setAntallTrekk(1);
 			return (spiller.nesteHandling(bunkeTil.seSiste())).getKort();
 	} else {
+		forbiSpiller(spiller);
 		return kort;
 	}
 		
@@ -349,6 +355,8 @@ public class Spill {
 	public boolean nedkortSyd(Kort kort) {
 
 		if (Regler.kanLeggeNed(kort, bunkeTil.seSiste())){
+			syd.getHand().fjern(kort);
+			bunkeTil.leggTil(kort);
 			return true;
 		}
 		return false;
